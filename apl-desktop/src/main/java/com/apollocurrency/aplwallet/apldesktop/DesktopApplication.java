@@ -25,6 +25,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import com.apollocurrency.aplwallet.apl.util.Constants;
 import com.apollocurrency.aplwallet.apl.util.Version;
+import com.sun.javafx.webkit.WebConsoleListener;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -67,6 +68,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javafx.event.EventHandler;
+import javafx.scene.web.WebErrorEvent;
 
 //import netscape.javascript.JSObject;
 
@@ -381,12 +384,12 @@ public class DesktopApplication extends Application {
 //            TODO figure out why do we require user config dir here for localstorage
 //            webEngine.setUserDataDirectory(new File(RuntimeEnvironment.getInstance().getDirProvider().getUserConfigDirectory()));
 
-//            WebConsoleListener.setDefaultListener(new WebConsoleListener(){
-//                @Override
-//                public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
-//                    LOG.debug("Console: [" + sourceId + ":" + lineNumber + "] " + message);
-//                }
-//            });
+            WebConsoleListener.setDefaultListener(new WebConsoleListener(){
+                @Override
+                public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
+                    LOG.debug("Console: [" + sourceId + ":" + lineNumber + "] " + message);
+                }
+            });
             Worker<Void> loadWorker = webEngine.getLoadWorker();
             loadWorker.stateProperty().addListener((ov, oldState, newState) -> {
                         LOG.debug("loadWorker old state " + oldState + " new state " + newState);
@@ -431,8 +434,11 @@ public class DesktopApplication extends Application {
 
             // Invoked when changing the document.location property, when issuing a download request
             webEngine.locationProperty().addListener((observable, oldValue, newValue) -> webViewURLChange(newValue));
-
+            
             // Invoked when clicking a link to external site like Help or API console
+            
+           // invisible.getEngine().onErrorProperty().addListener((observable, oldValue, newValue) -> processError(newValue));
+            
             webEngine.setCreatePopupHandler(
                     config -> {
                         LOG.info("popup request from webEngine");
@@ -440,6 +446,7 @@ public class DesktopApplication extends Application {
                         return invisible.getEngine();
                     });
 
+         
             webEngine.load(getUrl());
 
             Scene scene = new Scene(browser);
@@ -454,6 +461,12 @@ public class DesktopApplication extends Application {
             mainStage.show();
             Platform.setImplicitExit(false); // So that we can reopen the application in case the user closed it
         }
+        
+        /*private void processError(EventHandler<WebErrorEvent> error)
+        {
+            error.toString()
+        
+        }*/
         
         public void startChangelogWindow() {
             changelogStage = new Stage();

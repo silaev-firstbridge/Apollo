@@ -10,11 +10,14 @@ import com.apollocurrency.aplwallet.apl.exchange.model.DexOffer;
 import com.apollocurrency.aplwallet.apl.exchange.service.DexService;
 import com.apollocurrency.aplwallet.apl.exchange.utils.DexCurrencyValidator;
 import com.apollocurrency.aplwallet.apl.util.AplException;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 
 import javax.enterprise.inject.spi.CDI;
 import java.nio.ByteBuffer;
+import java.util.Map;
 
+@Slf4j
 public class DexTransferMoneyTransaction extends DEX {
 
     private DexService dexService = CDI.current().select(DexService.class).get();
@@ -58,14 +61,13 @@ public class DexTransferMoneyTransaction extends DEX {
     public void applyAttachment(Transaction transaction, Account senderAccount, Account recipientAccount) {
         DexControlOfFrozenMoneyAttachment attachment = (DexControlOfFrozenMoneyAttachment) transaction.getAttachment();
 
-        DexOffer offer = dexService.getOfferById(attachment.getOrderId());
+        DexOffer offer = dexService.getOfferByTransactionId(attachment.getOrderId());
 
-        //TODO change order status.
         if(attachment.isHasFrozenMoney() && DexCurrencyValidator.haveFreezeOrRefundApl(offer)) {
             try {
                 dexService.refundAPLFrozenMoney(offer);
             } catch (AplException.ExecutiveProcessException e) {
-                //TODO think it over.
+                log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
             }
         }
@@ -76,6 +78,12 @@ public class DexTransferMoneyTransaction extends DEX {
     @Override
     public void undoAttachmentUnconfirmed(Transaction transaction, Account senderAccount) {
 
+    }
+
+    @Override
+    public boolean isDuplicate(Transaction transaction, Map<TransactionType, Map<String, Integer>> duplicates) {
+        DexControlOfFrozenMoneyAttachment attachment = (DexControlOfFrozenMoneyAttachment) transaction.getAttachment();
+        return isDuplicate(DEX.DEX_TRANSFER_MONEY_TRANSACTION, Long.toUnsignedString(attachment.getOrderId()), duplicates, true);
     }
 
     @Override

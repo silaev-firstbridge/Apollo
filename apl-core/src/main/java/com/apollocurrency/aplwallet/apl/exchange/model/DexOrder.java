@@ -14,32 +14,46 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
+import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 
 
 @Data
 @Builder
-@AllArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 @EqualsAndHashCode
+@AllArgsConstructor
 public class DexOrder {
-
+    @NonNull
     private Long dbId;
+    @NonNull
     private Long id;
+    @NonNull
     private Long accountId;
+    @NonNull
     private String fromAddress;
+    @NonNull
     private String toAddress;
-
+    @NonNull
     private OrderType type;
+    @NonNull
     private OrderStatus status;
+    @NonNull
     private DexCurrencies orderCurrency;
+    @NonNull
     private Long orderAmount;
-
+    @NonNull
     private DexCurrencies pairCurrency;
+    @NonNull
     private BigDecimal pairRate;
+    @NonNull
     private Integer finishTime;
 
-    public DexOrder() {
-    }
-
+    private String freezeTxId;
+  
+    public DexOrder(){
+    };
+    
     public DexOrder(Transaction transaction, DexOrderAttachment dexOrderAttachment) {
         this.id = transaction.getId();
         this.accountId = transaction.getSenderId();
@@ -50,11 +64,12 @@ public class DexOrder {
         this.pairRate = EthUtil.gweiToEth(dexOrderAttachment.getPairRate());
         this.status = OrderStatus.getType(dexOrderAttachment.getStatus());
         this.finishTime = dexOrderAttachment.getFinishTime();
-
         if (dexOrderAttachment instanceof DexOrderAttachmentV2) {
             this.fromAddress = ((DexOrderAttachmentV2) dexOrderAttachment).getFromAddress();
             this.toAddress = ((DexOrderAttachmentV2) dexOrderAttachment).getToAddress();
         }
+        
+        
     }
 
     public DexOrderDto toDto() {
@@ -73,7 +88,8 @@ public class DexOrder {
         dexOrderDto.status = this.getStatus().ordinal();
         //TODO make changes on UI. Send BigDecimal.
         dexOrderDto.pairRate = EthUtil.ethToGwei(this.getPairRate());
-
+        
+        dexOrderDto.freezeTxId = this.freezeTxId;
         return dexOrderDto;
     }
 

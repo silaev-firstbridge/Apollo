@@ -38,5 +38,7 @@ public class DexOrderDto {
     public Integer status;
     @Schema(name="Finish time", description="Order finish time")
     public Integer finishTime;
+    @Schema(name="Currency freeze tx ID", description="Currency freeze transaction ID")
+    public String freezeTxId;
 
 }

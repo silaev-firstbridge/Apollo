@@ -33,6 +33,7 @@ public interface DexOrderDao {
             "AND (:status is NULL OR offer.status = :status) " +
             "AND (:offerCur is NULL OR offer.offer_currency = :offerCur) " +
             "AND (:pairCur is NULL OR offer.pair_currency = :pairCur) " +
+            "AND (:freezeTxId is NULL OR offer.freezetxid = :freezeTxId)" +
             "ORDER BY offer.pair_rate DESC " +
             "OFFSET :offset LIMIT :limit"
     )
@@ -50,6 +51,7 @@ public interface DexOrderDao {
             " AND offer.pair_currency = :pairCur" +
             " AND offer.pair_rate >= :pairRate" +
             " AND offer.status = 0" +
+  //          " AND offer.freezetxid = :freezeTxId" +
             " ORDER BY offer.pair_rate <orderby> ")
     @RegisterRowMapper(DexOrderMapper.class)
     List<DexOrder> getOffersForMatchingWnenBuy(@BindBean DexOfferDBMatchingRequest dexOfferDBMatchingRequest, @Define("orderby") String orderBy);
@@ -65,6 +67,7 @@ public interface DexOrderDao {
             " AND offer.pair_currency = :pairCur" +
             " AND offer.pair_rate <= :pairRate" +
             " AND offer.status = 0" +
+//            " AND offer.freezetxid = :freezeTxId" +
             " ORDER BY offer.pair_rate <orderby> ")
     @RegisterRowMapper(DexOrderMapper.class)
     List<DexOrder> getOffersForMatchingWnenSell(@BindBean DexOfferDBMatchingRequest dexOfferDBMatchingRequest, @Define("orderby") String orderBy);
@@ -80,6 +83,7 @@ public interface DexOrderDao {
             " AND offer.pair_currency = :pairCur" +
             " AND offer.pair_rate = :pairRate" +
             " AND offer.status = 0" +
+//            " AND offer.freezetxid = :freezeTxId" +
             " ORDER BY offer.pair_rate <orderby> ")
     @RegisterRowMapper(DexOrderMapper.class)
     List<DexOrder> getOffersForMatchingPure(@BindBean DexOfferDBMatchingRequest dexOfferDBMatchingRequest, @Define("orderby") String orderBy);

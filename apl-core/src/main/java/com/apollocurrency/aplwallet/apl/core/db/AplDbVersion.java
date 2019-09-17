@@ -825,7 +825,9 @@ public class AplDbVersion extends DbVersion {
             case 314:
                 apply("ALTER TABLE dex_contract ADD COLUMN IF NOT EXISTS deadline_to_reply INT NOT NULL");
             case 315:
-                return 315;
+                apply("ALTER TABLE dex_offer ADD COLUMN IF NOT EXISTS freezeTxId VARCHAR" );
+            case 316:
+                return 316;
             default:
                 throw new RuntimeException("Blockchain database inconsistent with code, at update " + nextUpdate
                         + ", probably trying to run older code on newer database");

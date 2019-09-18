@@ -548,6 +548,17 @@ public class DexService {
             //Add eth freeze transaction confirmations check
             log.debug("Just a sell Sell Order, add eth confirmations check here...");
             String freezeTxId = dexOrder.getFreezeTxId();
+            Long txId = dexOrder.getId();
+            if (freezeTxId != null)
+                    if (freezeTxId.isEmpty()){
+                    log.debug("There is no freeze tx ID for transaction {}", txId);
+                    return true;
+                }
+                else {
+                    log.debug("Freeze tx ID = {}", freezeTxId);
+                }
+            else return true;
+            
             int confirmations = ethereumWalletService.getNumberOfConfirmations(freezeTxId);
             return confirmations >= Constants.DEX_ETH_NUMBER_OF_CONFIRMATIONS;
         }

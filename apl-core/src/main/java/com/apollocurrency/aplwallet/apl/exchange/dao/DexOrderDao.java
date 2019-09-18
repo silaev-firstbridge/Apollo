@@ -6,8 +6,8 @@ package com.apollocurrency.aplwallet.apl.exchange.dao;
 
 import com.apollocurrency.aplwallet.apl.core.db.cdi.Transactional;
 import com.apollocurrency.aplwallet.apl.core.db.dao.mapper.DexOrderMapper;
-import com.apollocurrency.aplwallet.apl.exchange.model.DexOfferDBMatchingRequest;
 import com.apollocurrency.aplwallet.apl.exchange.model.DexOrder;
+import com.apollocurrency.aplwallet.apl.exchange.model.DexOrderDBMatchingRequest;
 import com.apollocurrency.aplwallet.apl.exchange.model.DexOrderDBRequest;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
 import org.jdbi.v3.sqlobject.customizer.AllowUnusedBindings;
@@ -54,7 +54,7 @@ public interface DexOrderDao {
   //          " AND offer.freezetxid = :freezeTxId" +
             " ORDER BY offer.pair_rate <orderby> ")
     @RegisterRowMapper(DexOrderMapper.class)
-    List<DexOrder> getOffersForMatchingWnenBuy(@BindBean DexOfferDBMatchingRequest dexOfferDBMatchingRequest, @Define("orderby") String orderBy);
+    List<DexOrder> getOffersForMatchingWnenBuy(@BindBean DexOrderDBMatchingRequest dexOrderDBMatchingRequest, @Define("orderby") String orderBy);
 
     @AllowUnusedBindings
     @Transactional(readOnly = true)
@@ -70,7 +70,7 @@ public interface DexOrderDao {
 //            " AND offer.freezetxid = :freezeTxId" +
             " ORDER BY offer.pair_rate <orderby> ")
     @RegisterRowMapper(DexOrderMapper.class)
-    List<DexOrder> getOffersForMatchingWnenSell(@BindBean DexOfferDBMatchingRequest dexOfferDBMatchingRequest, @Define("orderby") String orderBy);
+    List<DexOrder> getOffersForMatchingWnenSell(@BindBean DexOrderDBMatchingRequest dexOrderDBMatchingRequest, @Define("orderby") String orderBy);
 
     @AllowUnusedBindings
     @Transactional(readOnly = true)
@@ -86,7 +86,7 @@ public interface DexOrderDao {
 //            " AND offer.freezetxid = :freezeTxId" +
             " ORDER BY offer.pair_rate <orderby> ")
     @RegisterRowMapper(DexOrderMapper.class)
-    List<DexOrder> getOffersForMatchingPure(@BindBean DexOfferDBMatchingRequest dexOfferDBMatchingRequest, @Define("orderby") String orderBy);
+    List<DexOrder> getOffersForMatchingPure(@BindBean DexOrderDBMatchingRequest dexOrderDBMatchingRequest, @Define("orderby") String orderBy);
 
     @Transactional(readOnly = true)
     @SqlQuery("SELECT * FROM dex_offer AS offer " +

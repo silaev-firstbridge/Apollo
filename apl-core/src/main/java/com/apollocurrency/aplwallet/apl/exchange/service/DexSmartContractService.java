@@ -202,7 +202,9 @@ public class DexSmartContractService {
      * @return link on tx.
      */
     private String deposit(Credentials credentials, Long orderId, BigInteger weiValue, Long gasPrice, String token){
+        log.debug("NPE below");
         BigInteger orderIdUnsign = new BigInteger(Long.toUnsignedString(orderId));
+        log.debug("NPE above");
         ContractGasProvider contractGasProvider = new StaticGasProvider(EtherUtil.convert(gasPrice, EtherUtil.Unit.GWEI), Constants.GAS_LIMIT_FOR_ETH_ATOMIC_SWAP_CONTRACT);
         DexContract  dexContract = new DexContractImpl(smartContractAddress, web3j, credentials, contractGasProvider);
         TransactionReceipt transactionReceipt = null;

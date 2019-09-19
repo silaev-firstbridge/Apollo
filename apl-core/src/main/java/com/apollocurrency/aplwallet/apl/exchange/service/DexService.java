@@ -283,18 +283,27 @@ public class DexService {
     }
 
     public String freezeEthPax(String passphrase, DexOrder order) throws ExecutionException, AplException.ExecutiveProcessException {
-        String txHash;
-
+        String txHash = null;
+        log.debug("Freeze order 1");
         DexCurrencyValidator.checkHaveFreezeOrRefundEthOrPax(order);
-
+        log.debug("Freeze order 2");
         BigDecimal haveToPay = EthUtil.atmToEth(order.getOrderAmount()).multiply(order.getPairRate());
-        txHash = dexSmartContractService.deposit(passphrase, order.getId(), order.getAccountId(), order.getFromAddress(), EthUtil.etherToWei(haveToPay), null, order.getPairCurrency());
-
-
+        log.debug("Freeze order 3");
+        try{
+            txHash = dexSmartContractService.deposit(passphrase, order.getId(), order.getAccountId(), order.getFromAddress(), EthUtil.etherToWei(haveToPay), null, order.getPairCurrency());
+        }
+        catch (Exception e)
+        {
+            log.debug(e.getMessage());
+            e.printStackTrace();
+        }
+        
+        log.debug("Freeze order 4");
+        log.debug("Freeze TX hash = {}", txHash);
         if (txHash == null) {
             throw new AplException.ExecutiveProcessException("Exception in the process of freezing money.");
         }
-
+        log.debug("Freeze order 5");
         return txHash;
     }
 
@@ -459,10 +468,14 @@ public class DexService {
         String freezeTx = null;
         JSONStreamAware response = new JSONObject();
         log.debug("Create Offer: Order currency: {}, OrderType: {}", order.getPairCurrency(), order.getType());
+        log.debug("Some strange things: isEthOrPax: {} isBuy: {}", order.getPairCurrency().isEthOrPax(), order.getType().isBuy());
         
         if (order.getPairCurrency().isEthOrPax() && order.getType().isBuy()) {
+            log.debug("createOffer 1");
             String passphrase = Convert.emptyToNull(ParameterParser.getPassphrase(requestWrapper, true));
+            log.debug("createOffer 2");
             freezeTx = freezeEthPax(passphrase, order);
+            log.debug("createOffer 3");
             order.setFreezeTxId(freezeTx);
             log.debug("Create order - frozen money, accountId: {}, offerId: {}, freezeTxId = {}", account.getId(), order.getId(), order.getFreezeTxId());
         }

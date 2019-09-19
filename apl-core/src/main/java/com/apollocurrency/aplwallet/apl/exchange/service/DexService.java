@@ -33,7 +33,7 @@ import com.apollocurrency.aplwallet.apl.core.transaction.messages.Attachment;
 import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexCloseOrderAttachment;
 import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexContractAttachment;
 import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexControlOfFrozenMoneyAttachment;
-import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexOrderAttachmentV2;
+import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexOrderAttachmentV3;
 import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexOrderCancelAttachment;
 import com.apollocurrency.aplwallet.apl.core.transaction.messages.MessagingPhasingVoteCasting;
 import com.apollocurrency.aplwallet.apl.core.transaction.messages.PhasingAppendixV2;
@@ -458,7 +458,15 @@ public class DexService {
         DexOrder counterOffer = dexMatcherService.findCounterOffer(order);
         String freezeTx = null;
         JSONStreamAware response = new JSONObject();
-
+        log.debug("Create Offer: Order currency: {}, OrderType: {}", order.getPairCurrency(), order.getType());
+        
+        if (order.getPairCurrency().isEthOrPax() && order.getType().isBuy()) {
+            String passphrase = Convert.emptyToNull(ParameterParser.getPassphrase(requestWrapper, true));
+            freezeTx = freezeEthPax(passphrase, order);
+            order.setFreezeTxId(freezeTx);
+            log.debug("Create order - frozen money, accountId: {}, offerId: {}, freezeTxId = {}", account.getId(), order.getId(), order.getFreezeTxId());
+        }
+        
         if (counterOffer != null) {
             if (counterOffer.getAccountId().equals(order.getAccountId())) {
                 throw new ParameterException(JSONResponses.DEX_SELF_ORDER_MATCHING_DENIED);
@@ -466,7 +474,7 @@ public class DexService {
             // 1. Create order.
             order.setStatus(OrderStatus.PENDING);
             CreateTransactionRequest createOfferTransactionRequest = HttpRequestToCreateTransactionRequestConverter
-                    .convert(requestWrapper, account, 0L, 0L, new DexOrderAttachmentV2(order));
+                    .convert(requestWrapper, account, 0L, 0L, new DexOrderAttachmentV3(order));
             Transaction offerTx = dexOrderTransactionCreator.createTransaction(createOfferTransactionRequest);
             order.setId(offerTx.getId());
 
@@ -475,19 +483,14 @@ public class DexService {
             response = dexOrderTransactionCreator.createTransaction(requestWrapper, account, 0L, 0L, contractAttachment);
         } else {
             CreateTransactionRequest createOfferTransactionRequest = HttpRequestToCreateTransactionRequestConverter
-                    .convert(requestWrapper, account, 0L, 0L, new DexOrderAttachmentV2(order));
+                    .convert(requestWrapper, account, 0L, 0L, new DexOrderAttachmentV3(order));
             Transaction offerTx = dexOrderTransactionCreator.createTransaction(createOfferTransactionRequest);
             order.setId(offerTx.getId());
         }
 
-        if (order.getPairCurrency().isEthOrPax() && order.getType().isBuy()) {
-            String passphrase = Convert.emptyToNull(ParameterParser.getPassphrase(requestWrapper, true));
-            freezeTx = freezeEthPax(passphrase, order);
-            order.setFreezeTxId(freezeTx);
-            log.debug("Create order - frozen money, accountId: {}, offerId: {}", account.getId(), order.getId());
-        }
+       
         if (freezeTx != null) {
-            ((JSONObject) response).put("frozenTx", freezeTx);
+            ((JSONObject) response).put("freezeTx", freezeTx);
         }
 
         return response;

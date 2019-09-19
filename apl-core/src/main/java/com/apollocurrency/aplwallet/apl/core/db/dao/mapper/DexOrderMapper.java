@@ -33,7 +33,7 @@ public class DexOrderMapper implements RowMapper<DexOrder> {
         dexOrder.setStatus(OrderStatus.getType(rs.getInt("status")));
         dexOrder.setFromAddress(rs.getString("from_address"));
         dexOrder.setToAddress(rs.getString("to_address"));
-
+        dexOrder.setFreezeTxId(rs.getString("freezetxid"));
         return dexOrder;
     }
 

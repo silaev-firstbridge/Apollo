@@ -7,6 +7,7 @@ import com.apollocurrency.aplwallet.api.dto.DexOrderDto;
 import com.apollocurrency.aplwallet.apl.core.app.Transaction;
 import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexOrderAttachment;
 import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexOrderAttachmentV2;
+import com.apollocurrency.aplwallet.apl.core.transaction.messages.DexOrderAttachmentV3;
 import com.apollocurrency.aplwallet.apl.eth.utils.EthUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,13 +21,11 @@ import lombok.NonNull;
 
 @Data
 @Builder
-@RequiredArgsConstructor(staticName = "of")
+@RequiredArgsConstructor
 @EqualsAndHashCode
 @AllArgsConstructor
 public class DexOrder {
-    @NonNull
     private Long dbId;
-    @NonNull
     private Long id;
     @NonNull
     private Long accountId;
@@ -68,8 +67,11 @@ public class DexOrder {
             this.fromAddress = ((DexOrderAttachmentV2) dexOrderAttachment).getFromAddress();
             this.toAddress = ((DexOrderAttachmentV2) dexOrderAttachment).getToAddress();
         }
-        
-        
+        if (dexOrderAttachment instanceof DexOrderAttachmentV3) {
+            this.fromAddress = ((DexOrderAttachmentV3) dexOrderAttachment).getFromAddress();
+            this.toAddress = ((DexOrderAttachmentV3) dexOrderAttachment).getToAddress();
+            this.freezeTxId = ((DexOrderAttachmentV3) dexOrderAttachment).getFreezeTxId();
+        }        
     }
 
     public DexOrderDto toDto() {

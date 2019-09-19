@@ -211,6 +211,7 @@ public class DexController {
                         .finishTime(currentTime + amountOfTime)
                         .build();
             } catch (Exception ex) {
+                log.debug(ex.getMessage());
                 return Response.ok(JSON.toString(JSONResponses.ERROR_INCORRECT_REQUEST)).build();
             }
 

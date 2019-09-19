@@ -56,8 +56,8 @@ public class DexOrderTable extends EntityDbTable<DexOrder> {
     @Override
     public void save(Connection con, DexOrder order) throws SQLException {
         try (PreparedStatement pstmt = con.prepareStatement("INSERT INTO dex_offer (id, account_id, type, " +
-                "offer_currency, offer_amount, pair_currency, pair_rate, finish_time, status, height, latest, from_address, to_address)" +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE, ?, ?)")){
+                "offer_currency, offer_amount, pair_currency, pair_rate, finish_time, status, height, latest, from_address, to_address, freezetxid)" +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE, ?, ?, ?)")){
             int i = 0;
             pstmt.setLong(++i, order.getId());
             pstmt.setLong(++i, order.getAccountId());
@@ -72,6 +72,7 @@ public class DexOrderTable extends EntityDbTable<DexOrder> {
             pstmt.setInt(++i, blockchain.getHeight());
             pstmt.setString(++i, order.getFromAddress());
             pstmt.setString(++i, order.getToAddress());
+            pstmt.setString(++i, order.getFreezeTxId());
             pstmt.executeUpdate();
         }
     }

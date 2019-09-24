@@ -30,6 +30,7 @@ import com.apollocurrency.aplwallet.apl.data.PrunableMessageTestData;
 import com.apollocurrency.aplwallet.apl.extension.DbExtension;
 import com.apollocurrency.aplwallet.apl.testutil.DbUtils;
 import com.apollocurrency.aplwallet.apl.util.NtpTime;
+import com.apollocurrency.aplwallet.apl.util.cache.InMemoryCacheManager;
 import com.apollocurrency.aplwallet.apl.util.injectable.PropertiesHolder;
 import org.jboss.weld.junit.MockBean;
 import org.jboss.weld.junit5.EnableWeld;
@@ -62,6 +63,7 @@ class PrunableMessageServiceTest {
     )
             .addBeans(MockBean.of(extension.getDatabaseManager(), DatabaseManager.class))
             .addBeans(MockBean.of(blockchain, Blockchain.class))
+            .addBeans(MockBean.of(mock(InMemoryCacheManager.class), InMemoryCacheManager.class))
             .build();
     @Inject
     PrunableMessageService service;

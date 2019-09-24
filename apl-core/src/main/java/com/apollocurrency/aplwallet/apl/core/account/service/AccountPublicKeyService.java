@@ -20,7 +20,9 @@ public interface AccountPublicKeyService {
 
     boolean isCacheEnabled();
 
-    Map<DbKey, byte[]> getPublicKeyCache();
+    void cleanUp();
+
+    void invalidate(DbKey dbKey);
 
     byte[] getPublicKey(long id);
 

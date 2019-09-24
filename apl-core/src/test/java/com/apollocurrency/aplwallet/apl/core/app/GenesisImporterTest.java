@@ -34,6 +34,7 @@ import com.apollocurrency.aplwallet.apl.data.BalancesPublicKeysTestData;
 import com.apollocurrency.aplwallet.apl.data.DbTestData;
 import com.apollocurrency.aplwallet.apl.extension.DbExtension;
 import com.apollocurrency.aplwallet.apl.extension.TemporaryFolderExtension;
+import com.apollocurrency.aplwallet.apl.util.cache.InMemoryCacheManager;
 import com.apollocurrency.aplwallet.apl.util.env.config.Chain;
 import com.apollocurrency.aplwallet.apl.util.env.dirprovider.ConfigDirProvider;
 import com.apollocurrency.aplwallet.apl.util.injectable.PropertiesHolder;
@@ -102,6 +103,7 @@ class GenesisImporterTest {
             .addBeans(MockBean.of(genesisImporterProducer, GenesisImporterProducer.class))
             .addBeans(MockBean.of(mock(GlobalSync.class), GlobalSync.class, GlobalSyncImpl.class))
             .addBeans(MockBean.of(mock(BlockIndexService.class), BlockIndexService.class))
+            .addBeans(MockBean.of(mock(InMemoryCacheManager.class), InMemoryCacheManager.class))
             .build();
 
     private GenesisImporter genesisImporter;

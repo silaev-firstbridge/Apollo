@@ -83,7 +83,7 @@ public class TrimService {
                 trimDerivedTables(lastTrimHeight, false);
             }
             for (int i = lastTrimHeight + trimFrequency; i <= height; i += trimFrequency) {
-                log.debug("Perform trim on height {}", i);
+                log.info("Perform trim on height {}", i);
                 trimDerivedTables(i, false);
             }
         } finally {
@@ -103,10 +103,10 @@ public class TrimService {
                 long startTime = System.currentTimeMillis();
                 doTrimDerivedTablesOnBlockchainHeight(height, async);
                 dataSource.commit(!inTransaction);
-                log.debug("Total trim time: {} ms on height '{}', InTr?=('{}')",
+                log.info("Total trim time: {} ms on height '{}', InTr?=('{}')",
                         (System.currentTimeMillis() - startTime), height, inTransaction);
             } catch (Exception e) {
-                log.info(e.toString(), e);
+                log.warn(e.toString(), e);
                 dataSource.rollback(!inTransaction);
                 throw e;
             }
@@ -128,10 +128,10 @@ public class TrimService {
                 dbManager.getDataSource().commit(false);
                 int pruningTime = doTrimDerivedTablesOnHeight(trimHeight, false);
                 if (async) {
-                    log.debug("Fire doTrimDerived async event height '{}'", blockchainHeight);
+                    log.debug("Fire doTrimDerived event height '{}' Async, trimHeight={}", blockchainHeight, trimHeight);
                     trimEvent.select(new AnnotationLiteral<Async>() {}).fire(new TrimData(trimHeight, blockchainHeight, pruningTime));
                 } else {
-                    log.debug("Fire doTrimDerived sync event height '{}'", blockchainHeight);
+                    log.debug("Fire doTrimDerived event height '{}' Sync, trimHeight={}", blockchainHeight, trimHeight);
                     trimEvent.select(new AnnotationLiteral<Sync>() {}).fire(new TrimData(trimHeight, blockchainHeight, pruningTime));
                 }
                 trimEntry.setDone(true);
@@ -175,7 +175,9 @@ public class TrimService {
                         table.prune(pruningTime);
                         table.trim(height);
                         dataSource.commit(false);
-                        onlyTrimTime += (System.currentTimeMillis() - startTime);
+                        long duration = System.currentTimeMillis() - startTime;
+                        log.debug("Trim of {} took {} ms",table.getName(), duration);
+                        onlyTrimTime += duration;
                     } finally {
                         if (!oneLock) {
                             globalSync.readUnlock();
@@ -187,7 +189,7 @@ public class TrimService {
                     globalSync.readUnlock();
                 }
             }
-            log.debug("Trim time onlyTrim/full: {} / {} ms, pruning='{}' on height='{}'",
+            log.info("Trim time onlyTrim/full: {} / {} ms, pruning='{}' on height='{}'",
                     onlyTrimTime, System.currentTimeMillis() - start, pruningTime, height);
             return pruningTime;
 

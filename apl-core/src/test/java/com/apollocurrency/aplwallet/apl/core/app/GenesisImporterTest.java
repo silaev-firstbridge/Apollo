@@ -23,12 +23,12 @@ import com.apollocurrency.aplwallet.apl.core.db.DerivedDbTablesRegistryImpl;
 import com.apollocurrency.aplwallet.apl.core.db.ShardRecoveryDaoJdbcImpl;
 import com.apollocurrency.aplwallet.apl.core.db.TransactionalDataSource;
 import com.apollocurrency.aplwallet.apl.core.db.cdi.transaction.JdbiHandleFactory;
-import com.apollocurrency.aplwallet.apl.core.db.dao.BlockIndexDao;
 import com.apollocurrency.aplwallet.apl.core.db.dao.TransactionIndexDao;
 import com.apollocurrency.aplwallet.apl.core.db.derived.DerivedTableData;
 import com.apollocurrency.aplwallet.apl.core.db.fulltext.FullTextConfigImpl;
 import com.apollocurrency.aplwallet.apl.core.db.fulltext.FullTextSearchEngine;
 import com.apollocurrency.aplwallet.apl.core.db.fulltext.FullTextSearchService;
+import com.apollocurrency.aplwallet.apl.core.shard.BlockIndexService;
 import com.apollocurrency.aplwallet.apl.crypto.Convert;
 import com.apollocurrency.aplwallet.apl.data.BalancesPublicKeysTestData;
 import com.apollocurrency.aplwallet.apl.data.DbTestData;
@@ -87,7 +87,7 @@ class GenesisImporterTest {
             AccountServiceImpl.class, AccountPublicKeyServiceImpl.class,
             FullTextConfigImpl.class, DerivedDbTablesRegistryImpl.class, PropertiesHolder.class,
             ShardRecoveryDaoJdbcImpl.class, GenesisImporter.class, GenesisPublicKeyTable.class,
-            BlockIndexDao.class, TransactionDaoImpl.class, BlockchainImpl.class,
+            TransactionDaoImpl.class, BlockchainImpl.class,
             BlockDaoImpl.class, TransactionIndexDao.class, DaoConfig.class)
             .addBeans(MockBean.of(mock(TimeService.class), TimeService.class))
             .addBeans(MockBean.of(configDirProvider, ConfigDirProvider.class))
@@ -101,6 +101,7 @@ class GenesisImporterTest {
             .addBeans(MockBean.of(aplAppStatus, AplAppStatus.class))
             .addBeans(MockBean.of(genesisImporterProducer, GenesisImporterProducer.class))
             .addBeans(MockBean.of(mock(GlobalSync.class), GlobalSync.class, GlobalSyncImpl.class))
+            .addBeans(MockBean.of(mock(BlockIndexService.class), BlockIndexService.class))
             .build();
 
     private GenesisImporter genesisImporter;

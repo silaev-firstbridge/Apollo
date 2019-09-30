@@ -33,9 +33,7 @@ public class EthGasStationInfoDao {
             try {
                 sc = SSLContext.getInstance("TLSv1.2");
                 sc.init(null, null, new java.security.SecureRandom());
-            } catch (NoSuchAlgorithmException ex) {
-                Logger.getLogger(EthGasStationInfoDao.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (KeyManagementException ex) {
+            } catch (NoSuchAlgorithmException | KeyManagementException ex) {
                 Logger.getLogger(EthGasStationInfoDao.class.getName()).log(Level.SEVERE, null, ex);
             }
 

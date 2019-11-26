@@ -1449,4 +1449,19 @@ public class TestBaseOld extends TestBase {
         addParameters(Parameters.messageToEncryptToSelfIsText, true);
     }
 
+
+    public void phased(int phasingFinishHeight, int phasingVotingModel, int phasingQuorum,int phasingMinBalance,int phasingHolding,int phasingMinBalanceModel){
+        addParameters(Parameters.phased, true);
+        addParameters(Parameters.phasingFinishHeight, phasingFinishHeight);
+        addParameters(Parameters.phasingVotingModel, phasingVotingModel);
+        addParameters(Parameters.phasingQuorum, phasingQuorum);
+        addParameters(Parameters.phasingMinBalance, phasingMinBalance);
+        addParameters(Parameters.phasingHolding, phasingHolding);
+        addParameters(Parameters.phasingMinBalanceModel, phasingMinBalanceModel);
+    }
+
+    public void referencedTransaction(String  referencedTransactionFullHash){
+        addParameters(Parameters.referencedTransactionFullHash, referencedTransactionFullHash);
+    }
+
 }

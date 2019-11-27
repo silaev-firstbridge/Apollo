@@ -175,13 +175,13 @@ public class HttpHelper {
             Assertions.assertFalse(responseBody.contains("errorDescription"), responseBody);
         }
         if (TestBase.testInfo != null) {
-            Allure.addAttachment("Response Body", responseBody);
+            Allure.addAttachment("Response Body","application/json",responseBody);
         }
         return (T) mapper.readValue(responseBody, clazz);
         }
         catch (Exception e)
         {
-            Allure.addAttachment("Response Body", responseBody);
+            Allure.addAttachment("Response Body", "application/json",responseBody);
            return fail(responseBody +"\n"+e.getMessage());
         }
     }

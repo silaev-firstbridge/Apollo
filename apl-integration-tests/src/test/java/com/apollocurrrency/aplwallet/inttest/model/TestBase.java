@@ -77,7 +77,7 @@ public abstract class TestBase implements ITest {
 
 
     @AfterEach
-    @Step("AfterEach")
+    @Step("After testh")
    public void tearDown(){
         this.testInfo = null;
     }

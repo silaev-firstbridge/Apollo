@@ -542,7 +542,7 @@ public class TestBaseOld extends TestBase {
 
         return getInstanse(CreateTransactionResponse.class);
     }
-
+    @Step
     public CreateTransactionResponse castVote(Wallet wallet, String poll, int vote){
 
         addParameters(RequestType.requestType, RequestType.castVote);

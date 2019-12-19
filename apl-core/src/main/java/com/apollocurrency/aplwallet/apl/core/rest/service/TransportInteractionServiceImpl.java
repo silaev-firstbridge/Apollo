@@ -84,13 +84,25 @@ public class TransportInteractionServiceImpl implements TransportInteractionServ
     }
 
     @Override
-    public void startSecureTransport() {
-        transportInteractionWebSocket.startSecureTransport();
+    public boolean startSecureTransport() {
+         
+        if ( transportInteractionWebSocket.isOpen() ) {
+            transportInteractionWebSocket.startSecureTransport();
+            return true;
+            } else {
+            return false;        
+        }            
+        
     }
 
     @Override
-    public void stopSecureTransport() {
-        transportInteractionWebSocket.stopSecureTransport();
+    public boolean stopSecureTransport() {
+        if ( transportInteractionWebSocket.isOpen() ) {
+            transportInteractionWebSocket.stopSecureTransport();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

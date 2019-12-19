@@ -24,13 +24,13 @@ public interface TransportInteractionService {
      * Starting up with secure transport     
      */
 
-    public void startSecureTransport();
+    public boolean startSecureTransport();
     
     /**
      * Stopping secure transport     
      */
 
-    public void stopSecureTransport();
+    public boolean stopSecureTransport();
         
     /** 
      * Start transport interaction service

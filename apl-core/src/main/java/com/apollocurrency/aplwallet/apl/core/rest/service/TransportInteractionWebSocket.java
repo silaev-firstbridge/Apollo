@@ -141,7 +141,8 @@ public class TransportInteractionWebSocket {
      */
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        log.debug("TransportInteractionWebSocket: onClose, code: {}, reason: {} " , statusCode, reason );
+        log.debug("TransportInteractionWebSocket: onClose, code: {}, reason: {} " , statusCode, reason );        
+        cleanupComParams();
         this.session = null;           
     }
 

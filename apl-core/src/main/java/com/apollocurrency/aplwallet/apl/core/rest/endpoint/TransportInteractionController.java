@@ -71,7 +71,7 @@ public class TransportInteractionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful exchage"),
             @ApiResponse(responseCode = "200", description = "Unexpected error") })
-    public ResponseDone connect(    //  @Parameter(description = "adminPassword.") @QueryParam("adminPassword") String adminPassword,                               
+    public ResponseDone connect(    @Parameter(description = "adminPassword.") @QueryParam("adminPassword") String adminPassword,                               
                                 @Context HttpServletRequest req) throws NotFoundException {
         
         ResponseDone response = new ResponseDone();
@@ -99,7 +99,7 @@ public class TransportInteractionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful exchage"),
             @ApiResponse(responseCode = "200", description = "Unexpected error") })
-    public ResponseDone disconnect(   //   @Parameter(description = "adminPassword.") @QueryParam("adminPassword") String adminPassword,                               
+    public ResponseDone disconnect(   @Parameter(description = "adminPassword.") @QueryParam("adminPassword") String adminPassword,                               
                                 @Context HttpServletRequest req) throws NotFoundException {
         
         ResponseDone response = new ResponseDone();

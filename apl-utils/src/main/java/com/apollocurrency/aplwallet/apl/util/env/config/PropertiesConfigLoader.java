@@ -21,6 +21,11 @@ public class PropertiesConfigLoader extends AbstractConfigLoader<Properties> {
         this.systemPropertiesNames = systemPropertiesNames == null ? new ArrayList<>() : systemPropertiesNames;
     }
 
+    public PropertiesConfigLoader(ConfigDirProvider dirProvider, boolean ignoreResources, String configDir, List<String> systemPropertiesNames, String ...resourceName) {
+        super(dirProvider, ignoreResources, configDir, resourceName);
+        this.systemPropertiesNames = systemPropertiesNames == null ? new ArrayList<>() : systemPropertiesNames;
+    }
+
 
     public PropertiesConfigLoader(ConfigDirProvider dirProvider, boolean ignoreResources, String configDir, List<String> systemPropertiesNames) {
         this(dirProvider, ignoreResources, configDir, DEFAULT_PROPERTIES_FILENAME, systemPropertiesNames);

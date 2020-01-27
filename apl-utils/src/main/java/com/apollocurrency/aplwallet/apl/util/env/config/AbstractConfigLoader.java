@@ -19,7 +19,7 @@ public abstract class AbstractConfigLoader<T> implements ConfigLoader<T> {
     private boolean ignoreUserConfig;
     private String configDir;
     private T config;
-    private String resourceName;
+    private String[] resourceNameArray; // we want to load several *.property files here
 
     public AbstractConfigLoader(boolean ignoreResources, String configDir, String resourceName) {
         this(null, ignoreResources, configDir, resourceName);
@@ -36,7 +36,21 @@ public abstract class AbstractConfigLoader<T> implements ConfigLoader<T> {
         if(!StringUtils.isBlank(configDir)){
             this.configDir = configDir;
         }
-        this.resourceName = resourceName;
+        this.resourceNameArray = new String[]{resourceName};
+    }
+
+    public AbstractConfigLoader(ConfigDirProvider dirProvider, boolean ignoreResources, String configDir, String ...resourcesName) {
+        StringValidator.requireMultipleNonBlank("One of Resources is blank or empty", resourcesName);
+        this.ignoreUserConfig = dirProvider == null && StringUtils.isBlank(configDir);
+        if (ignoreUserConfig && ignoreResources) {
+                throw new IllegalArgumentException("No locations for config loading provided. Resources and user defined configs ignored");
+        }
+        this.dirProvider = dirProvider;
+        this.ignoreResources = ignoreResources;
+        if(!StringUtils.isBlank(configDir)){
+            this.configDir = configDir;
+        }
+        this.resourceNameArray = resourcesName;
     }
 
     public AbstractConfigLoader(String resourceName) {
@@ -67,19 +81,20 @@ public abstract class AbstractConfigLoader<T> implements ConfigLoader<T> {
 
     private void loadFromResources() {
         // using '/' as separator instead of platform dependent File.separator
-        String fn = (dirProvider == null ? DEFAULT_CONF_DIR : dirProvider.getConfigDirectoryName()) + "/" + resourceName;
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        try (InputStream is = classloader.getResourceAsStream(fn)) {
-            if (is == null){
-                System.err.println("The resource could not be found: " + fn);
-            } else {
-                T defaultConfig = read(is);
-                config = merge(config, defaultConfig);
+        for (String resourceItem : resourceNameArray) {
+            String fn = (dirProvider == null ? DEFAULT_CONF_DIR : dirProvider.getConfigDirectoryName()) + "/" + resourceItem;
+            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+            try (InputStream is = classloader.getResourceAsStream(fn)) {
+                if (is == null){
+                    System.err.println("The resource could not be found: " + fn);
+                } else {
+                    T defaultConfig = read(is);
+                    config = merge(config, defaultConfig);
+                }
+            } catch (IOException|IllegalArgumentException e) {
+                System.err.println("Can not load resource: " + fn);
+                e.printStackTrace();
             }
-        }
-        catch (IOException|IllegalArgumentException e) {
-            System.err.println("Can not load resource: " + fn);
-            e.printStackTrace();
         }
     }
 
@@ -93,16 +108,16 @@ public abstract class AbstractConfigLoader<T> implements ConfigLoader<T> {
             searchDirs.add(dirProvider.getUserConfigDirectory());
         }
         for (String dir : searchDirs) {
-            String p = dir + File.separator + resourceName;
-            try (FileInputStream is = new FileInputStream(p)) {
-                T userConfig = read(is);
-                config = merge(config, userConfig);
-            }
-            catch (FileNotFoundException ignored) {
-                System.err.println("File not found: " + p); // do not use logger (we should init it before using)
-            }
-            catch (IOException e) {
-                System.err.println("Config IO error " + e.toString());
+            for (String resourceItem : resourceNameArray) {
+                String p = dir + File.separator + resourceItem;
+                try (FileInputStream is = new FileInputStream(p)) {
+                    T userConfig = read(is);
+                    config = merge(config, userConfig);
+                } catch (FileNotFoundException ignored) {
+                    System.err.println("File not found: " + p); // do not use logger (we should init it before using)
+                } catch (IOException e) {
+                    System.err.println("Config IO error " + e.toString());
+                }
             }
         }
     }

@@ -3,8 +3,10 @@ package com.apollocurrency.aplwallet.apl.core.app.service;
 import com.apollocurrency.aplwallet.apl.core.db.model.OptionDAO;
 import com.apollocurrency.aplwallet.apl.core.model.SecureStorage;
 import com.apollocurrency.aplwallet.apl.crypto.Convert;
+import com.apollocurrency.aplwallet.apl.crypto.Crypto;
 import com.apollocurrency.aplwallet.apl.util.AplException;
 import com.apollocurrency.aplwallet.apl.util.injectable.PropertiesHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
@@ -14,7 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.slf4j.LoggerFactory.getLogger;
 
+@Slf4j
 @Singleton
 public class SecureStorageServiceImpl implements SecureStorageService {
     private static final Logger LOG = getLogger(SecureStorageServiceImpl.class);
@@ -106,7 +111,7 @@ public class SecureStorageServiceImpl implements SecureStorageService {
         String privateKey = optionDAO.get(keyName);
 
         if(privateKey == null){
-            optionDAO.set(keyName, createPrivateKeyForStorage());
+            optionDAO.set(keyName, createCryptoKeyForStorage());
         }
         privateKey = optionDAO.get(keyName);
 
@@ -156,7 +161,7 @@ public class SecureStorageServiceImpl implements SecureStorageService {
     }
 
     @Override
-    public String createPrivateKeyForStorage() {
+    public String createCryptoKeyForStorage() {
         byte [] secretBytes = new byte[32];
         Random random = new Random();
         random.nextBytes(secretBytes);
@@ -165,6 +170,13 @@ public class SecureStorageServiceImpl implements SecureStorageService {
         return privateKey;
     }
 
+    public byte [] createCryptoKeyForStorage(String seed) {
+        MessageDigest digest = Crypto.sha256();
+        digest.update(seed.getBytes());
+        byte [] secretBytes = digest.digest();
+        log.debug("Generated shared Key ({}) = \n\t{}\n\t{}", seed, Arrays.toString(secretBytes), Convert.toHexString(secretBytes) );
+        return secretBytes;
+    }
 
     /**
      * Restore storage if it exist.

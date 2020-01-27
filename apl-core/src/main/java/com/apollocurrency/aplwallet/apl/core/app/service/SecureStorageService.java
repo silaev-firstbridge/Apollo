@@ -41,9 +41,13 @@ public interface SecureStorageService {
     /**
      * Create private key for application.
      */
-    String createPrivateKeyForStorage() throws AplException.ExecutiveProcessException;
-   
-    
+    String createCryptoKeyForStorage() throws AplException.ExecutiveProcessException;
+
+    /**
+     * Create shared key for AES by using seed value.
+     */
+    byte [] createCryptoKeyForStorage(String seed) throws AplException.ExecutiveProcessException;
+
     /**
      * Flushing keys after decentralized exchange routine
      * @param accountID   id of the corresponding account

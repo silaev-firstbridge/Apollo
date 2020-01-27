@@ -20,6 +20,19 @@ public class StringValidator {
         }
         return s;
     }
+
+    public static String[] requireMultipleNonBlank(String parameterNameToPrint, String ...valuesToCheck) {
+        Objects.requireNonNull(valuesToCheck, String.format(NULL_STRING_EXCEPTION_TEMPLATE, parameterNameToPrint));
+        if (valuesToCheck.length > 0) {
+            for (String argument : valuesToCheck) {
+                if (argument == null || argument.isEmpty() || argument.trim().isEmpty()) {
+                    throw new IllegalArgumentException(String.format(BLANK_STRING_EXCEPTION_TEMPLATE, parameterNameToPrint));
+                }
+            }
+        }
+        return valuesToCheck;
+    }
+
     public static String requireNonBlank(String s) {
         return requireNonBlank(s, DEFAULT_STRING_NAME);
     }

@@ -201,11 +201,12 @@ public class Apollo {
         ConfigDirProvider configDirProvider = ConfigDirProviderFactory.getConfigDirProvider();
 
         PropertiesConfigLoader propertiesLoader = new PropertiesConfigLoader(
-                configDirProvider,
-                args.isResourceIgnored(),
-                StringUtils.isBlank(args.configDir) ? envVars.configDir : args.configDir,
-                Constants.APPLICATION_DIR_NAME + ".properties",
-                SYSTEM_PROPERTY_NAMES);
+            configDirProvider,
+            args.isResourceIgnored(),
+            StringUtils.isBlank(args.configDir) ? envVars.configDir : args.configDir,
+            SYSTEM_PROPERTY_NAMES,
+            Constants.APPLICATION_DIR_NAME + ".properties",
+            Constants.APPLICATION_ADMIN_NAME + ".properties");
 
         ChainsConfigLoader chainsConfigLoader = new ChainsConfigLoader(
                 configDirProvider,

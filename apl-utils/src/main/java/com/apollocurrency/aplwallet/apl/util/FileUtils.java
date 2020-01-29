@@ -25,8 +25,7 @@ public class FileUtils {
     public static boolean deleteFileIfExistsQuietly(Path file) {
         try {
             return Files.deleteIfExists(file);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             log.error("Unable to delete file {}, cause: {}", file, e.getMessage());
         }
         return false;
@@ -35,8 +34,7 @@ public class FileUtils {
     public static boolean deleteFileIfExistsAndHandleException(Path file, Consumer<IOException> handler) {
         try {
             return Files.deleteIfExists(file);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             handler.accept(e);
         }
         return false;
@@ -45,8 +43,7 @@ public class FileUtils {
     public static boolean deleteFileIfExists(Path file) {
         try {
             return Files.deleteIfExists(file);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e.toString(), e);
         }
     }

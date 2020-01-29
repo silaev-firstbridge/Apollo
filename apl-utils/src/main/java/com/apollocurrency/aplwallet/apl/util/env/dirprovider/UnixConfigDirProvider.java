@@ -4,6 +4,9 @@
 
 package com.apollocurrency.aplwallet.apl.util.env.dirprovider;
 
+import lombok.ToString;
+
+@ToString(callSuper = true)
 public class UnixConfigDirProvider extends DefaultConfigDirProvider {
 
     public UnixConfigDirProvider(String applicationName, boolean isService,int netIdx) {

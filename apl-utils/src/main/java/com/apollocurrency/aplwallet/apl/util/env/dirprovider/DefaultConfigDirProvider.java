@@ -64,4 +64,15 @@ public class DefaultConfigDirProvider implements ConfigDirProvider {
         return res;
 
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("DefaultConfigDirProvider{");
+        sb.append("applicationName='").append(applicationName).append('\'');
+        sb.append(", isService=").append(isService);
+        sb.append(", networkIndex=").append(netIndex);
+        sb.append(", CONF_DIRS=[").append(CONF_DIRS != null ? CONF_DIRS.length : -1).append("]");
+        sb.append('}');
+        return sb.toString();
+    }
 }

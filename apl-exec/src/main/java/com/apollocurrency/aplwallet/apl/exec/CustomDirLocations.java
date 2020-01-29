@@ -8,6 +8,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
+/**
+ * Class gives ability to specify different/custom folder for :
+ * - 'database' placement
+ * - 'vault wallet' placement
+ */
 public class CustomDirLocations {
     public static final String DB_DIR_PROPERTY_NAME = "apl.customDbDir";
     public static final String KEYSTORE_DIR_PROPERTY_NAME = "apl.customVaultKeystoreDir";

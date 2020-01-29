@@ -5,7 +5,6 @@ package com.apollocurrency.aplwallet.apl.exec;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import com.apollocurrency.aplwallet.apl.conf.ConfPlaceholder;
 import com.apollocurrency.aplwallet.apl.core.app.AplCoreRuntime;
 import com.apollocurrency.aplwallet.apl.core.app.service.SecureStorageService;
 import com.apollocurrency.aplwallet.apl.core.chainid.BlockchainConfig;
@@ -25,7 +24,7 @@ import com.apollocurrency.aplwallet.apl.util.env.RuntimeParams;
 import com.apollocurrency.aplwallet.apl.util.env.config.Chain;
 import com.apollocurrency.aplwallet.apl.util.env.config.ChainUtils;
 import com.apollocurrency.aplwallet.apl.util.env.config.ChainsConfigLoader;
-import com.apollocurrency.aplwallet.apl.util.env.config.PropertiesConfigLoader;
+import com.apollocurrency.aplwallet.apl.util.env.config.ConfigurationLoadService;
 import com.apollocurrency.aplwallet.apl.util.env.dirprovider.ConfigDirProvider;
 import com.apollocurrency.aplwallet.apl.util.env.dirprovider.ConfigDirProviderFactory;
 import com.apollocurrency.aplwallet.apl.util.env.dirprovider.DirProvider;
@@ -194,30 +193,27 @@ public class Apollo {
         System.setProperty("javax.net.ssl.trustStoreType", "JKS");
 
 //cheat classloader to get access to package resources
-        ConfPlaceholder ph = new ConfPlaceholder();
+//        ConfPlaceholder ph = new ConfPlaceholder();
 //load configuration files
         EnvironmentVariables envVars = new EnvironmentVariables(Constants.APPLICATION_DIR_NAME);
         ConfigDirProviderFactory.setup(args.serviceMode, Constants.APPLICATION_DIR_NAME, args.netIdx);
         ConfigDirProvider configDirProvider = ConfigDirProviderFactory.getConfigDirProvider();
 
-        PropertiesConfigLoader propertiesLoader = new PropertiesConfigLoader(
+        // first it's created manually and prepared for CDI usage later
+        ConfigurationLoadService configurationService = new ConfigurationLoadService(
             configDirProvider,
             args.isResourceIgnored(),
             StringUtils.isBlank(args.configDir) ? envVars.configDir : args.configDir,
             SYSTEM_PROPERTY_NAMES,
             Constants.APPLICATION_DIR_NAME + ".properties",
-            Constants.APPLICATION_ADMIN_NAME + ".properties");
-
-        ChainsConfigLoader chainsConfigLoader = new ChainsConfigLoader(
-                configDirProvider,
-                StringUtils.isBlank(args.configDir) ? envVars.configDir : args.configDir,
-                args.isResourceIgnored()
+            Constants.APPLICATION_ADMIN_NAME + ".properties",
+            ChainsConfigLoader.DEFAULT_CHAINS_FILENAME
         );
-// init application data dir provider
 
-        Map<UUID, Chain> chains = chainsConfigLoader.load();
+        // init application data dir provider
+        Map<UUID, Chain> chains = configurationService.chainsLoad();
         UUID chainId = ChainUtils.getActiveChain(chains).getChainId();
-        Properties props = propertiesLoader.load();
+        Properties props = configurationService.propertiesLoad();
 //over-write config options from command line if set
         if(args.noShardImport!=null){
             props.setProperty("apl.noshardimport", ""+args.noShardImport);
@@ -251,7 +247,7 @@ public class Apollo {
         runtimeMode.init(); // instance is NOT PROXIED by CDI !!
 
         //save command line params and PID
-        if(!saveStartParams(argv, args.pidFile,configDirProvider)){
+        if(!saveStartParams(argv, args.pidFile, configDirProvider)){
             System.exit(PosixExitCodes.EX_CANTCREAT.exitCode());
         }
 
@@ -272,9 +268,10 @@ public class Apollo {
         // init config holders
         app.propertiesHolder = CDI.current().select(PropertiesHolder.class).get();
         app.propertiesHolder.init(props);
-        if (log != null) log.trace("{}", app.propertiesHolder.dumpAllProperties()); // dumping all properties
+        if (log != null && log.isDebugEnabled()) log.debug("{}", app.propertiesHolder.dumpAllProperties()); // dumping all properties
 
         app.taskDispatchManager = CDI.current().select(TaskDispatchManager.class).get();
+        // prepare configuration components to be put into CDI
         ChainsConfigHolder chainsConfigHolder = CDI.current().select(ChainsConfigHolder.class).get();
         chainsConfigHolder.setChains(chains);
         BlockchainConfigUpdater blockchainConfigUpdater = CDI.current().select(BlockchainConfigUpdater.class).get();

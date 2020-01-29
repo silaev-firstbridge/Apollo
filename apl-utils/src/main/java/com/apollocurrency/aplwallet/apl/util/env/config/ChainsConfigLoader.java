@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class ChainsConfigLoader extends AbstractConfigLoader<Map<UUID, Chain>> {
     private static final ObjectMapper MAPPER = JSON.getMapper();
-    private static final String DEFAULT_CHAINS_FILENAME = "chains.json";
+    public static final String DEFAULT_CHAINS_FILENAME = "chains.json";
 
     public ChainsConfigLoader(boolean ignoreResources, String configDir, String resourceName) {
         super(ignoreResources, configDir, resourceName);
@@ -46,6 +46,29 @@ public class ChainsConfigLoader extends AbstractConfigLoader<Map<UUID, Chain>> {
         super(dirProvider, ignoreResources, configDir, DEFAULT_CHAINS_FILENAME);
     }
 
+    /**
+     * One resource like 'chains.json' file can be loaded.
+     *
+     * @param dirProvider
+     * @param configDir
+     * @param ignoreResources
+     * @param resourceName 'chains.json' usually is loaded
+     */
+    public ChainsConfigLoader(ConfigDirProvider dirProvider, String configDir, boolean ignoreResources, String resourceName) {
+        super(dirProvider, ignoreResources, configDir, resourceName);
+    }
+
+    /**
+     * Multiple resources '*.json* files can be loaded (we don't need that in case json, only properties).
+     *
+     * @param dirProvider
+     * @param configDir
+     * @param ignoreResources
+     * @param resourcesName several '.json' files can be loaded
+     */
+    public ChainsConfigLoader(ConfigDirProvider dirProvider, String configDir, boolean ignoreResources, String ...resourcesName) {
+        super(dirProvider, ignoreResources, configDir, resourcesName);
+    }
 
     @Override
     protected Map<UUID, Chain> read(InputStream is) throws IOException {

@@ -3,6 +3,7 @@ package com.apollocurrency.aplwallet.apl.util.env.config;
 import com.apollocurrency.aplwallet.apl.util.StringUtils;
 import com.apollocurrency.aplwallet.apl.util.StringValidator;
 import com.apollocurrency.aplwallet.apl.util.env.dirprovider.ConfigDirProvider;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public abstract class AbstractConfigLoader<T> implements ConfigLoader<T> {
     private static final String DEFAULT_CONF_DIR = "conf";
     private ConfigDirProvider dirProvider;
@@ -86,7 +88,8 @@ public abstract class AbstractConfigLoader<T> implements ConfigLoader<T> {
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
             try (InputStream is = classloader.getResourceAsStream(fn)) {
                 if (is == null){
-                    System.err.println("The resource could not be found: " + fn);
+                    log.warn("Attempt to load, Resource could not be found: " + fn);// logger is used for unit tests
+                    System.err.println("Attempt to load, Resource could not be found: " + fn);
                 } else {
                     T defaultConfig = read(is);
                     config = merge(config, defaultConfig);
@@ -114,7 +117,8 @@ public abstract class AbstractConfigLoader<T> implements ConfigLoader<T> {
                     T userConfig = read(is);
                     config = merge(config, userConfig);
                 } catch (FileNotFoundException ignored) {
-                    System.err.println("File not found: " + p); // do not use logger (we should init it before using)
+                    log.warn("Attempt to load, File not found at: " + p); // logger is used for unit tests
+                    System.err.println("Attempt to load, File not found at: " + p); // do not use logger (we should init it before using)
                 } catch (IOException e) {
                     System.err.println("Config IO error " + e.toString());
                 }

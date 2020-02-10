@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018-2019 Apollo Foundation
+ * Copyright © 2018-2020 Apollo Foundation
  */
 package com.apollocurrency.aplwallet.apl.core.peer;
 
@@ -10,7 +10,6 @@ import com.apollocurrency.aplwallet.apl.util.UPnP;
 import com.apollocurrency.aplwallet.apl.util.env.MyNetworkInterfaces;
 import com.apollocurrency.aplwallet.apl.util.injectable.PropertiesHolder;
 import com.apollocurrency.aplwallet.apl.util.task.Task;
-import com.apollocurrency.aplwallet.apl.util.task.TaskOrder;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -179,7 +178,7 @@ public class PeerHttpServer {
                 .name("PeerUPnPInit")
                 .task(() -> {
                     try {
-                        if (peerServer != null) { // prevent NPE is offLine mode
+                        if (peerServer != null) { // prevent NPE in offLine mode
                             peerServer.start();
                             LOG.info("Started peer networking server at " + host + ":" + myPeerServerPort);
                         } else {

@@ -19,7 +19,7 @@
       <id>central</id>
       <name>Maven Repository Switchboard</name>
       <layout>default</layout>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>https://repo1.maven.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -63,7 +63,7 @@
         <!-- cross-platform zip distribution -->
         <zipname>apollo-wallet</zipname>
         <!--Dependency Versions-->
-      <web-wallet.version>2.5.44</web-wallet.version>
+      <web-wallet.version>2.5.48</web-wallet.version>
         <!--Web-->
         <servlet-api.version>3.1.0</servlet-api.version>
         <!--  -->
@@ -114,7 +114,7 @@
     <rs-api.version>2.1.1</rs-api.version>
     <resteasy.version>4.4.2.Final</resteasy.version>
     <swagger.version>2.1.0</swagger.version>
-    <junit5-bom.version>5.5.2</junit5-bom.version>
+    <junit5-bom.version>5.6.0</junit5-bom.version>
     <mockito.version>3.0.0</mockito.version>
     <hikari.version>3.4.1</hikari.version>
     <jcommander.version>1.72</jcommander.version>
